@@ -1,0 +1,74 @@
+# 1. Install ansible
+
+sudo apt update
+sudo apt install software-properties-common
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible
+
+# 2. Run playbook
+
+cd roles/
+git clone https://github.com/openwisp/ansible-openwisp2.git openwisp.openwisp2
+git clone https://github.com/Stouts/Stouts.postfix
+touch hosts playbook.yml
+
+Inside playbook.yml :
+
+- hosts: openwisp2
+  become: "{{ become | default('yes') }}"
+  roles:
+    - openwisp.openwisp2
+  vars:
+    postfix_myhostname: localhost
+    
+Inside hosts :
+
+[openwisp2]
+localhost
+    
+ansible-playbook -i hosts playbook.yml -u aryaman -K --ask-pass
+
+# 2.1 Install ssh server (only if req)
+ sudo apt-get install openssh-client openssh-server ssh-pass
+ export ANSIBLE_HOST_KEY_CHECKING=False
+
+# 2.2 Run influxdb on docker (only if req)
+ docker-compose up -d influxdb
+ 
+# 2.3 For some ngnix issues (only if req)
+sudo /etc/init.d/apache2 stop
+sudo systemctl restart nginx
+sudo fuser -k 80/tcp
+sudo fuser -k 443/tcp
+
+Login as root or:
+
+sudo su -
+Then uninstall nginx:
+
+apt-get purge nginx nginx-common nginx-full  
+And then install it:
+
+apt-get install nginx
+
+
+# 2.4 Openwisp PIP dependencies
+
+cd /
+cd opt/
+
+sudo chown -R <user_name>:www-data openwisp2
+sudo chmod -R g+s openwisp2
+source env/bin/activate 
+
+# NOTE : TASK [openwisp.openwisp2 : migrate] if any errors just do :
+sudo pip uninstall -r requirements.txt	
+
+
+config controller 'http'
+	option url 'https://192.168.56.1'
+	option verify_ssl '0'
+	option shared_secret 'wZzcfVybd3IeDLwGtk970zHQByHQLE1b'
+	
+
+
