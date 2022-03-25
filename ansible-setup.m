@@ -79,3 +79,41 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = ['https://19f1-103-172-72-246.ngrok.io']
+
+
+--------------------------
+# Using /opt/openwisp2
+
+sudo su
+cd /opt/openwisp2/
+source env/bin/activate
+
+- openwisp2/setting.py 
+
+ALLOWED_HOSTS = [
+    '*',
+]
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+python manage.py runserver
+
+- Open a new terminal window:
+source env/bin/activate
+celey -A openwisp2 worker -l info
+
+Get IP from router page ex - 192.168.5.109 (In my case this one)
+
+![Screenshot from 2022-03-25 17-15-13](https://user-images.githubusercontent.com/56113566/160115181-bc275238-daca-4e7f-b88a-1568db41e72c.png)
+	
+Then just change openwrt config of your VM or router
+
+config controller 'http'
+	option url 'http://192.168.5.109:8000'
+	option verify_ssl '0'
+	option uuid ''
+	option key ''
+
+/etc/init.d/openwisp_config restart
+
+
