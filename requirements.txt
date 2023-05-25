@@ -242,7 +242,7 @@ texttable==1.6.2
 threadpoolctl==2.2.0
 toml==0.10.2
 tomli==1.2.2
-tornado==6.1
+tornado==6.3.2
 trio==0.19.0
 trio-websocket==0.9.2
 Twisted==22.2.0
